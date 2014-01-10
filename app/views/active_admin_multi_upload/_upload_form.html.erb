@@ -1,0 +1,158 @@
+<%= stylesheet_link_tag "active_admin/jquery_upload" %>
+
+
+<%  options = options ||= {}
+    uploaded_ids_form_input_name = options[:uploaded_ids_form_input_name] ||= "#{resource.class.name.downcase}[#{association.singularize}_ids][]"
+    existing_uploads = options[:existing_uploads] ||= resource.send(association.to_sym)
+    input_id_prefix = options[:input_id_prefix] ||= "#{resource.class.name.downcase}_#{association.singularize}_ids_"
+    post_url = options[:post_url] ||= "/admin/#{association}/create_upload"
+    input_name = options[:input_name] ||= "#{association.singularize}[#{attribute}]"
+
+ %>
+
+<div id="uploader">
+  <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+  <div class="row fileupload-buttonbar">
+    <div class="span7">
+    <!-- The fileinput-button span is used to style the file input field as button -->
+      <span class="btn btn-success fileinput-button">
+        <i class="icon-plus icon-white"></i>
+        <span>Add files...</span>
+        <input id="fileupload" type="file" name="<%= input_name %>" multiple>
+      </span>
+      <button type="reset" class="btn btn-warning cancel">
+        <i class="icon-ban-circle icon-white"></i>
+        <span>Cancel upload</span>
+      </button>
+      <button type="button" class="btn btn-danger delete">
+        <i class="icon-trash icon-white"></i>
+        <span>Delete</span>
+      </button>
+      <input type="checkbox" class="toggle">
+    </div>
+  </div>
+  <!-- The loading indicator is shown during image processing -->
+  <div class="fileupload-process"></div>
+  <br>
+  <!-- The table listing the files available for upload/download -->
+  <table class="table table-striped"><tbody class="files" id="files-container" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+</div>
+
+
+<script>
+  var fileUploadErrors = {
+    maxFileSize: 'File is too big',
+    minFileSize: 'File is too small',
+    acceptFileTypes: 'Filetype not allowed',
+    maxNumberOfFiles: 'Max number of files exceeded',
+    uploadedBytes: 'Uploaded bytes exceed file size',
+    emptyResult: 'Empty file upload result'
+};
+</script>
+
+<!-- The template to display files available for upload -->
+<script id="template-upload" type="text/x-tmpl">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+      <td class="preview"><span class="fade"></span></td>
+      <td class="name"><span>{%=file.name%}</span></td>
+      <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+      {% if (file.error) { %}
+        <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+      {% } else if (o.files.valid && !i) { %}
+        <td>
+          <div class="progress progress-striped active" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" role="progressbar" ><div class="progress-bar bar progress-bar-success" style="width:0%;"></div></div>
+        </td>
+        <td class="start">{% if (!o.options.autoUpload) { %}
+          <button class="btn btn-primary">
+            <i class="icon-upload icon-white"></i>
+            <span>{%=locale.fileupload.start%}</span>
+          </button>
+      {% } %}</td>
+      {% } else { %}
+        <td colspan="2"></td>
+      {% } %}
+      <td class="cancel">{% if (!i) { %}
+        <button class="btn btn-warning">
+          <i class="icon-ban-circle icon-white"></i>
+          <span>{%=locale.fileupload.cancel%}</span>
+        </button>
+      {% } %}</td>
+    </tr>
+  {% } %}
+</script>
+
+<!-- The template to display files available for download -->
+<script id="template-download" type="text/x-tmpl">
+  {% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+      {% if (file.error) { %}
+        <td></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+      {% } else { %}
+        <td class="preview">{% if (file.thumbnail_url) { %}
+          <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+        {% } %}</td>
+        <td class="name" id="upload_{%=file.id%}">
+          <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+        </td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        <td colspan="2"></td>
+      {% } %}
+      <td class="delete">
+        <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
+          <i class="icon-trash icon-white"></i>
+          <span>{%=locale.fileupload.destroy%}</span>
+        </button>
+        <input type="checkbox" name="delete" value="1">
+      </td>
+    </tr>
+  {% } %}
+</script>
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function () {
+  // Initialize the jQuery File Upload widget:
+    $('#uploader').fileupload({
+      url: "<%= post_url %>",
+      autoUpload: true,
+      formData: {},
+      sequentialUploads: true,
+      fileInput: $("#fileupload"),
+      filesContainer: "#files-container"
+    }).on('fileuploadcompleted', function(e, data) {
+      insertUploadInputs(data.result.files);
+    }).bind('fileuploaddestroy', function(e, data) {
+      removeUploadInputs([data]);
+    });
+  });
+</script>
+
+
+<script type="text/javascript">
+var insertUploadInputs = function(files) {
+  $.each(files, function(index, file) {
+      var input = $("<input type='hidden' class='file-upload' name='<%= uploaded_ids_form_input_name %>' id='<%= input_id_prefix %>" + file.id + "' value='" + file.id + "' />");
+      input.insertAfter($("#upload_" + file.id));
+  });
+};
+
+var removeUploadInputs = function(files) {
+  $.each(files, function(index, file) {
+    var id = file.url.split("/").pop();
+    $("#<%= input_id_prefix %>" + id).remove();
+  });
+};
+
+$(function () {
+  var files = <%= existing_uploads.map(&:to_jq_upload).to_json.html_safe %>;
+  var uploader = $("#uploader").data("blueimpFileupload");
+  var template = uploader._renderDownload(files)['appendTo'](uploader.options.filesContainer);
+  uploader._transition(template);
+  insertUploadInputs(files);
+});
+
+</script>
