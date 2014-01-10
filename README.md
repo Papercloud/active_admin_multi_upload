@@ -1,4 +1,4 @@
-ActiveAdminMultiUpload
+Active Admin Multi-Upload
 ========
 
 ### Support for multiple image upload for a nested resource in ActiveAdmin
