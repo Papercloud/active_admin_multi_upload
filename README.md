@@ -36,6 +36,8 @@ You can also assume the `@gallery` refers to the current gallery that we are cre
 
 **Substitute these with your own models and associations**
 
+### Run the generator
+
 ### Allow the Params
 
 In `/admin/gallery.rb` add `permit_params picture_ids: []`
