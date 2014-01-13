@@ -59,8 +59,16 @@ In `/admin/gallery.rb` add `permit_params picture_ids: []`
 Within your form render the `active_admin_multi_upload/upload_form`
 
     <%= f.inputs "Pictures" do %>
-      <%= render "active_admin_multi_upload/upload_form", :resource => @gallery, :association => "pictures", attribute: "image" , options: {} %>
+      <%= render "active_admin_multi_upload/upload_form", resource: @gallery, association: "pictures", attribute: "image" , options: {} %>
     <% end %>
+
+`:resource` is the Model variable.
+
+`:association` is the associated objects as a string.
+
+`:attribute` is the attribute of the associated object where the uploader is mounted.
+
+`:options` is a hash where extra options can be passed in (see below).
 
 Options
 ---------
