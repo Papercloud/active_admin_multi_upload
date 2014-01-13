@@ -87,19 +87,19 @@ All of these are optional, and sensible defaults are in place so that they shoul
 Releases
 -----------
 
-### 13.01.14
+### 0.0.2
 
- - 0.0.2 released with a small bug fix for multi-worded models
+Released with a small bug fix for multi-worded models
 
 Roadmap
 -----------
 
 Plans for future releases include:
 
-* ### Stand-alone uploads
+* **Stand-alone uploads.**
   Alowing for uploads of files not associated with anything else.
 
-* ### Ability to include multiple upload forms within one ActiveAdmin form.
+* **Ability to include multiple upload forms within one ActiveAdmin form.**
   Allowing you to upload files associated with different associations within the one form.
 
 
