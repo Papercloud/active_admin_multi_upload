@@ -1,0 +1,5 @@
+Description:
+    Adds the ability to upload multiple files to a Model that has a Carrierwave uploader mounted to it within Active Admin
+
+Example:
+    rails g active_admin_multi_upload:resource YourModel

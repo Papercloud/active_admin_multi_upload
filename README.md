@@ -26,10 +26,6 @@ Add the gem to your Gemfile
 
 Run `bundle install`.
 
-Run the generator on the Model with the Uplaoder mounted on it
-
-`rails g active_admin_multi_upload:resource YourModel`
-
 
 
 Setup
@@ -45,6 +41,14 @@ You can also assume the `@gallery` refers to the current gallery that we are cre
 **Substitute these with your own models and associations**
 
 ### Run the generator
+
+Run the generator on the Model with the Uploader mounted on it
+
+`rails g active_admin_multi_upload:resource Picture`
+
+### Initialize the Uploader
+
+In `admin/picture.rb` add the line `allows_multi_upload`
 
 ### Allow the Params
 
