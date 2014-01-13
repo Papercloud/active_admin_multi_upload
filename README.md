@@ -7,7 +7,7 @@ _This gem was built to work with Carrierwave & ActiveAdmin, and is based on the 
 
 ActiveAdminMultiUpload is a version of jquery-fileupload-ui built to work with nested objects and ActiveAdmin 1.0. It supports all major features including file-previews and progress bars, and has been built so as to have the simplest implentation possible. It has been tested with Rails 4.0.2 and Ruby 2.1.0
 
-**Please Note: Version 1.0.0 of this software only includes support for nested associations (eg. `Gallery.pictures`) and not standalone uploads. Feature will come in a future release.**
+**Please Note: The current version of this software only includes support for nested associations (eg. `Gallery.pictures`) and not standalone uploads. Feature will come in a future release.**
 
 Getting Started
 ========
