@@ -3,6 +3,8 @@ Active Admin Multi-Upload
 
 ### Support for multiple image upload for a nested resource in ActiveAdmin
 
+**13.01.14** - 0.0.2 released with a small bug fix for multi-worded models
+
 _This gem was built to work with Carrierwave & ActiveAdmin, and is based on the excellent jquery-fileupload-system._
 
 ActiveAdminMultiUpload is a version of jquery-fileupload-ui built to work with nested objects and ActiveAdmin 1.0. It supports all major features including file-previews and progress bars, and has been built so as to have the simplest implentation possible. It has been tested with Rails 4.0.2 and Ruby 2.1.0
@@ -82,6 +84,8 @@ At the moment the following options can be passed in to the above partial:
 * `:uploaded_ids_form_input_name` - *String*. Used for nested attributes. Defaults to `"#{resource.class.name.downcase}[#{association.singularize}_ids][]"`
 
 All of these are optional, and sensible defaults are in place so that they should not be required. However they have been included for your customization.
+
+
 
 
 
