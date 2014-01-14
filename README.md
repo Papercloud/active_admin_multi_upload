@@ -1,6 +1,10 @@
 Active Admin Multi-Upload
 ========
 
+###NOTICE:
+
+This is currently only working when the name of the attribute that the uploader is mounted on is called `:image`. I am looking into a fix for this now. Sorry!
+
 ### Support for multiple image upload for a nested resource in ActiveAdmin
 
 _This gem was built to work with Carrierwave & ActiveAdmin, and is based on the excellent jquery-fileupload-system._
@@ -90,6 +94,12 @@ Releases
 ### 0.0.2 -
 Released with a small bug fix for multi-worded models
 
+### 0.0.3 -
+Released with the ability to have multiple upload fields within the one form.
+
+**FOUND BUG:** It looks like this is currently only working when the uploader is mounted on an `:image` attribute. Looking into this now. Sorry, hope to have a fix out soon
+
+
 Roadmap
 -----------
 
@@ -99,9 +109,6 @@ Plans for future releases include:
 
   Alowing for uploads of files not associated with anything else.
 
-* **Ability to include multiple upload forms within one ActiveAdmin form.**
-
-  Allowing you to upload files associated with different associations within the one form.
 
 
 

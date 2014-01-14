@@ -7,10 +7,11 @@
     input_id_prefix = options[:input_id_prefix] ||= "#{resource.class.name.downcase}_#{association.singularize}_ids_"
     post_url = options[:post_url] ||= "/admin/#{association}/create_upload"
     input_name = options[:input_name] ||= "#{association.singularize}[#{attribute}]"
+    uploader_id = options[:uploader_name] ||= "#{association}_uploader"
 
  %>
 
-<div id="uploader">
+<div id="<%= uploader_id %>" class="uploader">
   <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
   <div class="row fileupload-buttonbar">
     <div class="span7">
@@ -18,7 +19,7 @@
       <span class="btn btn-success fileinput-button">
         <i class="icon-plus icon-white"></i>
         <span>Add files...</span>
-        <input id="fileupload" type="file" name="<%= input_name %>" multiple>
+        <input id="fileupload_<%= uploader_id %>" type="file" name="<%= input_name %>" multiple>
       </span>
       <button type="reset" class="btn btn-warning cancel">
         <i class="icon-ban-circle icon-white"></i>
@@ -35,7 +36,7 @@
   <div class="fileupload-process"></div>
   <br>
   <!-- The table listing the files available for upload/download -->
-  <table class="table table-striped"><tbody class="files" id="files-container" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+  <table class="table table-striped"><tbody class="files" id="<%= uploader_id %>-files-container" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
 </div>
 
 
@@ -46,7 +47,7 @@
     acceptFileTypes: 'Filetype not allowed',
     maxNumberOfFiles: 'Max number of files exceeded',
     uploadedBytes: 'Uploaded bytes exceed file size',
-    emptyResult: 'Empty file upload result'
+    emptyResult: 'Something went wrong. Please try again'
 };
 </script>
 
@@ -116,31 +117,32 @@
 <script type="text/javascript" charset="utf-8">
   $(function () {
   // Initialize the jQuery File Upload widget:
-    $('#uploader').fileupload({
+    $("#<%= uploader_id %>").fileupload({
       url: "<%= post_url %>",
       autoUpload: true,
       formData: {},
       sequentialUploads: true,
-      fileInput: $("#fileupload"),
-      filesContainer: "#files-container"
+      fileInput: $("#fileupload_<%= uploader_id %>"),
+      filesContainer: "#<%= uploader_id %>-files-container"
     }).on('fileuploadcompleted', function(e, data) {
-      insertUploadInputs(data.result.files);
+      insertUploadInputsFor<%= association.capitalize %>(data.result.files);
     }).bind('fileuploaddestroy', function(e, data) {
-      removeUploadInputs([data]);
+      removeUploadInputsFor<%= association.capitalize %>([data]);
     });
   });
 </script>
 
 
 <script type="text/javascript">
-var insertUploadInputs = function(files) {
+
+var insertUploadInputsFor<%= association.capitalize %> = function(files) {
   $.each(files, function(index, file) {
       var input = $("<input type='hidden' class='file-upload' name='<%= uploaded_ids_form_input_name %>' id='<%= input_id_prefix %>" + file.id + "' value='" + file.id + "' />");
       input.insertAfter($("#upload_" + file.id));
   });
 };
 
-var removeUploadInputs = function(files) {
+var removeUploadInputsFor<%= association.capitalize %> = function(files) {
   $.each(files, function(index, file) {
     var id = file.url.split("/").pop();
     $("#<%= input_id_prefix %>" + id).remove();
@@ -149,10 +151,10 @@ var removeUploadInputs = function(files) {
 
 $(function () {
   var files = <%= existing_uploads.map(&:to_jq_upload).to_json.html_safe %>;
-  var uploader = $("#uploader").data("blueimpFileupload");
+  var uploader = $("#<%= uploader_id %>").data("blueimpFileupload");
   var template = uploader._renderDownload(files)['appendTo'](uploader.options.filesContainer);
   uploader._transition(template);
-  insertUploadInputs(files);
+  insertUploadInputsFor<%= association.capitalize %>(files);
 });
 
 </script>
