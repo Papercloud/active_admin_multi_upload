@@ -8,6 +8,8 @@
     post_url = options[:post_url] ||= "/admin/#{association}/create_upload"
     input_name = options[:input_name] ||= "#{association.singularize}[#{attribute}]"
     uploader_id = options[:uploader_name] ||= "#{association}_uploader"
+    direct = options[:direct] ||= false
+    uploader_type = direct ? "fileupload" : "S3FileField"
 
  %>
 
@@ -19,7 +21,8 @@
       <span class="btn btn-success fileinput-button">
         <i class="icon-plus icon-white"></i>
         <span>Add files...</span>
-        <input id="fileupload_<%= uploader_id %>" type="file" name="<%= input_name %>" multiple>
+        <%= f.s3_file_field :image, class: "my_test", id: "fileupload_#{uploader_id}", name: input_name %>
+        <!-- <input type="file" name="<%= input_name %>" data-key="dssds"> -->
       </span>
       <button type="reset" class="btn btn-warning cancel">
         <i class="icon-ban-circle icon-white"></i>
@@ -117,13 +120,13 @@
 <script type="text/javascript" charset="utf-8">
   $(function () {
   // Initialize the jQuery File Upload widget:
-    $("#<%= uploader_id %>").fileupload({
-      url: "<%= post_url %>",
+    $("#fileupload_<%= uploader_id %>").S3FileField({
+      progress_bar_target: $('.progress-striped'),
+      allow_multiple_files: true,
       autoUpload: true,
-      formData: {},
-      sequentialUploads: true,
-      fileInput: $("#fileupload_<%= uploader_id %>"),
       filesContainer: "#<%= uploader_id %>-files-container"
+    }).on('fileuploaddone', function(e, data) {
+      console.log("Hello!");
     }).on('fileuploadcompleted', function(e, data) {
       insertUploadInputsFor<%= association.capitalize %>(data.result.files);
     }).bind('fileuploaddestroy', function(e, data) {
@@ -149,12 +152,12 @@ var removeUploadInputsFor<%= association.capitalize %> = function(files) {
   });
 };
 
-$(function () {
-  var files = <%= existing_uploads.map(&:to_jq_upload).to_json.html_safe %>;
-  var uploader = $("#<%= uploader_id %>").data("blueimpFileupload");
-  var template = uploader._renderDownload(files)['appendTo'](uploader.options.filesContainer);
-  uploader._transition(template);
-  insertUploadInputsFor<%= association.capitalize %>(files);
-});
+// $(function () {
+//   var files = <%= existing_uploads.map(&:to_jq_upload).to_json.html_safe %>;
+//   var uploader = $("#<%= uploader_id %>").data("blueimpFileupload");
+//   var template = uploader._renderDownload(files)['appendTo'](uploader.options.filesContainer);
+//   uploader._transition(template);
+//   insertUploadInputsFor<%= association.capitalize %>(files);
+// });
 
 </script>

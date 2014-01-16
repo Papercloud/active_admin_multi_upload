@@ -110,6 +110,17 @@ Plans for future releases include:
   Alowing for uploads of files not associated with anything else.
 
 
+<!--
+NEED TO ADD TO GEM/README:
+
++ S3 file_field
++ #= require s3_file_field
+
+
+
+
+
+ -->
 
 
 
