@@ -11,33 +11,17 @@
 
  %>
 
-<div id="<%= uploader_id %>" class="uploader">
-  <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-  <div class="row fileupload-buttonbar">
-    <div class="span7">
-    <!-- The fileinput-button span is used to style the file input field as button -->
-      <span class="btn btn-success fileinput-button">
-        <i class="icon-plus icon-white"></i>
-        <span>Add files...</span>
-        <input id="fileupload_<%= uploader_id %>" type="file" name="<%= input_name %>" multiple>
-      </span>
-      <button type="reset" class="btn btn-warning cancel">
-        <i class="icon-ban-circle icon-white"></i>
-        <span>Cancel upload</span>
-      </button>
-      <button type="button" class="btn btn-danger delete">
-        <i class="icon-trash icon-white"></i>
-        <span>Delete</span>
-      </button>
-      <input type="checkbox" class="toggle">
-    </div>
-  </div>
-  <!-- The loading indicator is shown during image processing -->
-  <div class="fileupload-process"></div>
-  <br>
-  <!-- The table listing the files available for upload/download -->
-  <table class="table table-striped"><tbody class="files" id="<%= uploader_id %>-files-container" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+
+<%= s3_uploader_form callback_url: post_url, callback_param: "photographs[remote_image_url]", id: uploader_id do %>
+  <%= file_field_tag :file, multiple: true %>
+<% end %>
+
+<script id="template-upload" type="text/x-tmpl">
+<div id="file-{%=o.unique_id%}" class="upload">
+  {%=o.name%}
+  <div class="progress"><div class="bar" style="width: 0%"></div></div>
 </div>
+</script>
 
 
 <script>
@@ -113,8 +97,15 @@
   {% } %}
 </script>
 
+<script type="text/javascript">
+  $(function() {
+    $("#<%= uploader_id %>").S3Uploader({
+      filesContainer: "#<%= uploader_id %>-files-container"
+    });
+  })
 
-<script type="text/javascript" charset="utf-8">
+</script>
+<!-- <script type="text/javascript" charset="utf-8">
   $(function () {
   // Initialize the jQuery File Upload widget:
     $("#<%= uploader_id %>").fileupload({
@@ -130,7 +121,7 @@
       removeUploadInputsFor<%= association.capitalize %>([data]);
     });
   });
-</script>
+</script> -->
 
 
 <script type="text/javascript">
