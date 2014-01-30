@@ -116,6 +116,9 @@ NEED TO ADD TO GEM/README:
 + S3 file_field
 + #= require s3_file_field
 
++ Initializer
++ add the initializer file to the project
+
 
 
 

@@ -9,7 +9,6 @@
     input_name = options[:input_name] ||= "#{association.singularize}[#{attribute}]"
     uploader_id = options[:uploader_name] ||= "#{association}_uploader"
     direct = options[:direct] ||= false
-    uploader_type = direct ? "fileupload" : "S3FileField"
 
  %>
 
@@ -21,7 +20,7 @@
       <span class="btn btn-success fileinput-button">
         <i class="icon-plus icon-white"></i>
         <span>Add files...</span>
-        <%= f.s3_file_field :image, class: "my_test", id: "fileupload_#{uploader_id}", name: input_name %>
+        <%= f.s3_file_field :image, class: "js-s3_file_field", id: "fileupload_#{uploader_id}", name: "file", multiple: true %>
         <!-- <input type="file" name="<%= input_name %>" data-key="dssds"> -->
       </span>
       <button type="reset" class="btn btn-warning cancel">
@@ -33,6 +32,9 @@
         <span>Delete</span>
       </button>
       <input type="checkbox" class="toggle">
+    </div>
+    <div class="progress">
+      <div class="meter progress-bar bar progress-bar-success" style="width: 0%;"></div>
     </div>
   </div>
   <!-- The loading indicator is shown during image processing -->
@@ -116,25 +118,103 @@
   {% } %}
 </script>
 
+<script type="text/javascript">
+  ready = function() {
+  return $(".js-s3_file_field").each(function() {
+    var $meter, $progress, $this, id;
+    id = $(this).attr('id');
+    $this = function() {
+      return $("#" + id);
+    };
+    $progress = $('.progress').hide();
+    $meter = $progress.find('.meter');
 
+    return $(this).S3FileField({
+      url: "<%= post_url %>",
+      progress_bar_target: $('.progress-striped'),
+      remove_completed_progress_bar: true,
+      allow_multiple_files: true,
+      autoUpload: true,
+      formData: {},
+      sequentialUplaods: true,
+      fileInput: $("#fileupload_<%= uploader_id %>"),
+      filesContainer: "#<%= uploader_id %>-files-container",
+      add: function(e, data) {
+        $progress.show();
+        return data.submit();
+      },
+      done: function(e, data) {
+        $progress.hide();
+        return $this().attr({
+          type: 'text',
+          value: data.result.url,
+          readonly: true
+        });
+        insertUploadInputsFor<%= association.capitalize %>(data.result.files);
+      },
+      fail: function(e, data) {
+        return alert(data.failReason);
+      },
+      progress: function(e, data) {
+        var progress;
+        progress = (data.loaded / data.total * 100);
+        return $meter.css({
+          width: "" + progress + "%"
+        });
+      },
+      destroy: function(e, data) {
+        removeUploadInputsFor<%= association.capitalize %>([data]);
+      }
+    });
+  });
+};
+
+$(document).ready(ready);
+
+$(document).on('page:load', ready);
+
+
+</script>
+
+<!--
 <script type="text/javascript" charset="utf-8">
   $(function () {
+    var $meter, $progress, $this;
+    $this = function() {
+      return $("#fileupload_<%= uploader_id %>");
+    };
+    $progress = $('.progress').hide();
+    $meter = $progress.find('.meter');
   // Initialize the jQuery File Upload widget:
     $("#fileupload_<%= uploader_id %>").S3FileField({
       progress_bar_target: $('.progress-striped'),
       allow_multiple_files: true,
       autoUpload: true,
-      filesContainer: "#<%= uploader_id %>-files-container"
-    }).on('fileuploaddone', function(e, data) {
-      console.log("Hello!");
-    }).on('fileuploadcompleted', function(e, data) {
-      insertUploadInputsFor<%= association.capitalize %>(data.result.files);
-    }).bind('fileuploaddestroy', function(e, data) {
-      removeUploadInputsFor<%= association.capitalize %>([data]);
-    });
-  });
+      filesContainer: "#<%= uploader_id %>-files-container",
+      add: function(e, data) {
+        $progress.show();
+        return data.submit();
+      },
+      done: function(e, data) {
+        $progress.hide();
+        return $this().attr({
+          type: 'text',
+          value: data.result.url,
+          readonly: true
+        });
+      },
+      fail: function(e, data) {
+        return alert(data.failReason);
+      },
+      progress: function(e, data) {
+        var progress;
+        progress = (data.loaded / data.total * 100);
+        return $meter.css({
+          width: "" + progress + "%"
+        });
+      }
 </script>
-
+ -->
 
 <script type="text/javascript">
 
