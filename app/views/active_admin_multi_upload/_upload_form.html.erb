@@ -3,6 +3,7 @@
 
 <%  options = options ||= {}
     uploaded_ids_form_input_name = options[:uploaded_ids_form_input_name] ||= "#{resource.class.name.downcase}[#{association.singularize}_ids][]"
+    "winery[photograh_ids][]"
     existing_uploads = options[:existing_uploads] ||= resource.send(association.to_sym)
     input_id_prefix = options[:input_id_prefix] ||= "#{resource.class.name.downcase}_#{association.singularize}_ids_"
     post_url = options[:post_url] ||= "/admin/#{association}/create_upload"
@@ -100,9 +101,20 @@
 <script type="text/javascript">
   $(function() {
     $("#<%= uploader_id %>").S3Uploader({
-      filesContainer: "#<%= uploader_id %>-files-container"
+      filesContainer: "#<%= uploader_id %>-files-container",
+      // forceIframeTransport: true,
+      autoUpload: true,
+      dataType: "xml"
     });
-  })
+
+    $('#myS3Uploader').bind("s3_upload_complete", function(e, content) {
+      alert("Success!");
+    });
+    $('#myS3Uploader').bind("s3_upload_failed", function(e, content) {
+      alert("Fail!");
+    });
+  });
+
 
 </script>
 <!-- <script type="text/javascript" charset="utf-8">
@@ -126,19 +138,7 @@
 
 <script type="text/javascript">
 
-var insertUploadInputsFor<%= association.capitalize %> = function(files) {
-  $.each(files, function(index, file) {
-      var input = $("<input type='hidden' class='file-upload' name='<%= uploaded_ids_form_input_name %>' id='<%= input_id_prefix %>" + file.id + "' value='" + file.id + "' />");
-      input.insertAfter($("#upload_" + file.id));
-  });
-};
-
-var removeUploadInputsFor<%= association.capitalize %> = function(files) {
-  $.each(files, function(index, file) {
-    var id = file.url.split("/").pop();
-    $("#<%= input_id_prefix %>" + id).remove();
-  });
-};
+w
 
 $(function () {
   var files = <%= existing_uploads.map(&:to_jq_upload).to_json.html_safe %>;
