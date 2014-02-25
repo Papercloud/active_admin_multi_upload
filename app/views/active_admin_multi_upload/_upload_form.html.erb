@@ -2,11 +2,11 @@
 
 
 <%  options = options ||= {}
-    uploaded_ids_form_input_name = options[:uploaded_ids_form_input_name] ||= "#{resource.class.name.downcase}[#{association.singularize}_ids][]"
+    uploaded_ids_form_input_name = options[:uploaded_ids_form_input_name] ||= "#{resource.class.name.underscore}[#{association.singularize}_ids][]"
     existing_uploads = options[:existing_uploads] ||= resource.send(association.to_sym)
-    input_id_prefix = options[:input_id_prefix] ||= "#{resource.class.name.downcase}_#{association.singularize}_ids_"
+    input_id_prefix = options[:input_id_prefix] ||= "#{resource.class.name.underscore}_#{association.singularize}_ids_"
     post_url = options[:post_url] ||= "/admin/#{association}/create_upload"
-    input_name = options[:input_name] ||= "#{association.singularize}[#{attribute}]"
+    input_name = options[:input_name] ||= "#{association.singularize.underscore}[#{attribute}]"
     uploader_id = options[:uploader_name] ||= "#{association}_uploader"
 
  %>
