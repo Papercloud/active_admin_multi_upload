@@ -52,7 +52,9 @@ Run the generator on the Model with the Uploader mounted on it
 
 ### Initialize the Uploader
 
-In `admin/picture.rb` add the line `allows_multi_upload`
+In `admin/picture.rb` add the line `allows_multi_upload(mounted_uploader: :<YOUR MOUNTED UPLOADER ATTRIBUTE NAME>)`
+
+e.g. `allows_multi_upload(mounted_uploader: :image)`
 
 ### Allow the Params
 
