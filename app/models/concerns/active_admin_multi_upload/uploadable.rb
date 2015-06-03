@@ -22,7 +22,7 @@ module ActiveAdminMultiUpload::Uploadable
           }
         end
       eoruby
-      class_eval(code)
+      class_eval(code) unless self.instance_methods.include? :to_jq_upload
     end
   end
 end
